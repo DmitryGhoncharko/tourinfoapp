@@ -6,7 +6,7 @@ namespace WindowsFormsApp2
 {
     public partial class LoginForm : Form
     {
-        private Database database;
+        private readonly Database database;
 
         public LoginForm(Database db)
         {
@@ -16,37 +16,37 @@ namespace WindowsFormsApp2
 
         private void loginButton_Click(object sender, EventArgs e)
         {
-            string username = usernameTextBox.Text;
-            string password = passwordTextBox.Text;
+            var username = usernameTextBox.Text;
+            var password = passwordTextBox.Text;
 
             database.OpenConnection();
-            string query = "SELECT * FROM Users WHERE Username=@username AND Password=@password";
-            MySqlCommand cmd = new MySqlCommand(query, database.GetConnection());
+            var query = "SELECT * FROM Users WHERE Username=@username AND Password=@password";
+            var cmd = new MySqlCommand(query, database.GetConnection());
             cmd.Parameters.AddWithValue("@username", username);
             cmd.Parameters.AddWithValue("@password", password);
 
-            MySqlDataReader reader = cmd.ExecuteReader();
+            var reader = cmd.ExecuteReader();
 
             if (reader.Read())
             {
-                string role = reader.GetString("Role");
-                int userId = reader.GetInt32("UserId");
+                var role = reader.GetString("Role");
+                var userId = reader.GetInt32("UserId");
 
                 reader.Close();
                 database.CloseConnection();
 
                 if (role == "admin")
                 {
-                    AdminForm adminForm = new AdminForm(database);
+                    var adminForm = new AdminForm(database);
                     adminForm.Show();
                 }
                 else
                 {
-                    ClientForm clientForm = new ClientForm(userId, database);
+                    var clientForm = new ClientForm(userId, database);
                     clientForm.Show();
                 }
 
-                this.Hide();
+                Hide();
             }
             else
             {
@@ -55,8 +55,5 @@ namespace WindowsFormsApp2
                 database.CloseConnection();
             }
         }
-
-      
     }
-
 }

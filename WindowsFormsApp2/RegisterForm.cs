@@ -6,7 +6,7 @@ namespace WindowsFormsApp2
 {
     public partial class RegisterForm : Form
     {
-        private Database database;
+        private readonly Database database;
 
         public RegisterForm(Database db)
         {
@@ -16,12 +16,12 @@ namespace WindowsFormsApp2
 
         private void registerButton_Click(object sender, EventArgs e)
         {
-            string username = usernameTextBox.Text;
-            string password = passwordTextBox.Text;
+            var username = usernameTextBox.Text;
+            var password = passwordTextBox.Text;
 
             database.OpenConnection();
-            string query = "INSERT INTO Users (Username, Password, Role) VALUES (@username, @password, 'client')";
-            MySqlCommand cmd = new MySqlCommand(query, database.GetConnection());
+            var query = "INSERT INTO Users (Username, Password, Role) VALUES (@username, @password, 'client')";
+            var cmd = new MySqlCommand(query, database.GetConnection());
             cmd.Parameters.AddWithValue("@username", username);
             cmd.Parameters.AddWithValue("@password", password);
 
@@ -29,7 +29,7 @@ namespace WindowsFormsApp2
             {
                 cmd.ExecuteNonQuery();
                 MessageBox.Show("Регистрация успешна");
-                this.Close();
+                Close();
             }
             catch (MySqlException ex)
             {
@@ -41,5 +41,4 @@ namespace WindowsFormsApp2
             }
         }
     }
-
 }

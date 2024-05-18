@@ -6,14 +6,14 @@ namespace WindowsFormsApp2
 {
     public partial class ClientForm : Form
     {
-        private int userId;
-        private Database database;
+        private readonly Database database;
+        private readonly int userId;
 
         public ClientForm(int userId, Database db)
         {
             InitializeComponent();
             this.userId = userId;
-            this.database = db;
+            database = db;
             LoadTours();
             LoadFavorites();
         }
@@ -22,13 +22,14 @@ namespace WindowsFormsApp2
         {
             toursListBox.Items.Clear();
             database.OpenConnection();
-            string query = "SELECT * FROM Tours";
-            MySqlCommand cmd = new MySqlCommand(query, database.GetConnection());
-            MySqlDataReader reader = cmd.ExecuteReader();
+            var query = "SELECT * FROM Tours";
+            var cmd = new MySqlCommand(query, database.GetConnection());
+            var reader = cmd.ExecuteReader();
 
             while (reader.Read())
             {
-                string tourInfo = $"{reader.GetInt32("TourId")}: {reader.GetString("Title")} - {reader.GetDecimal("Price")} рублей";
+                var tourInfo =
+                    $"{reader.GetInt32("TourId")}: {reader.GetString("Title")} - {reader.GetDecimal("Price")} рублей\nПогода: {reader.GetString("Weather")}\nТранспорт: {reader.GetString("Transport")}\nМероприятия: {reader.GetString("Events")}";
                 toursListBox.Items.Add(tourInfo);
             }
 
@@ -40,14 +41,16 @@ namespace WindowsFormsApp2
         {
             favoritesListBox.Items.Clear();
             database.OpenConnection();
-            string query = "SELECT Tours.* FROM Favorites JOIN Tours ON Favorites.TourId = Tours.TourId WHERE Favorites.UserId = @userId";
-            MySqlCommand cmd = new MySqlCommand(query, database.GetConnection());
+            var query =
+                "SELECT Tours.* FROM Favorites JOIN Tours ON Favorites.TourId = Tours.TourId WHERE Favorites.UserId = @userId";
+            var cmd = new MySqlCommand(query, database.GetConnection());
             cmd.Parameters.AddWithValue("@userId", userId);
-            MySqlDataReader reader = cmd.ExecuteReader();
+            var reader = cmd.ExecuteReader();
 
             while (reader.Read())
             {
-                string favoriteInfo = $"{reader.GetInt32("TourId")}: {reader.GetString("Title")} - {reader.GetDecimal("Price")} рублей";
+                var favoriteInfo =
+                    $"{reader.GetInt32("TourId")}: {reader.GetString("Title")} - {reader.GetDecimal("Price")} рублей\nПогода: {reader.GetString("Weather")}\nТранспорт: {reader.GetString("Transport")}\nМероприятия: {reader.GetString("Events")}";
                 favoritesListBox.Items.Add(favoriteInfo);
             }
 
@@ -59,18 +62,17 @@ namespace WindowsFormsApp2
         {
             if (toursListBox.SelectedItem != null)
             {
-                string selectedTour = toursListBox.SelectedItem.ToString();
-                int tourId = int.Parse(selectedTour.Split(':')[0]);
+                var selectedTour = toursListBox.SelectedItem.ToString();
+                var tourId = int.Parse(selectedTour.Split(':')[0]);
 
                 database.OpenConnection();
-                
-              
-                string checkQuery = "SELECT COUNT(*) FROM Favorites WHERE UserId = @userId AND TourId = @tourId";
-                MySqlCommand checkCmd = new MySqlCommand(checkQuery, database.GetConnection());
+
+                var checkQuery = "SELECT COUNT(*) FROM Favorites WHERE UserId = @userId AND TourId = @tourId";
+                var checkCmd = new MySqlCommand(checkQuery, database.GetConnection());
                 checkCmd.Parameters.AddWithValue("@userId", userId);
                 checkCmd.Parameters.AddWithValue("@tourId", tourId);
 
-                int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+                var count = Convert.ToInt32(checkCmd.ExecuteScalar());
                 if (count > 0)
                 {
                     MessageBox.Show("Тур уже добавлен в избранное");
@@ -78,9 +80,8 @@ namespace WindowsFormsApp2
                     return;
                 }
 
-                
-                string query = "INSERT INTO Favorites (UserId, TourId) VALUES (@userId, @tourId)";
-                MySqlCommand cmd = new MySqlCommand(query, database.GetConnection());
+                var query = "INSERT INTO Favorites (UserId, TourId) VALUES (@userId, @tourId)";
+                var cmd = new MySqlCommand(query, database.GetConnection());
                 cmd.Parameters.AddWithValue("@userId", userId);
                 cmd.Parameters.AddWithValue("@tourId", tourId);
 
@@ -96,12 +97,12 @@ namespace WindowsFormsApp2
         {
             if (favoritesListBox.SelectedItem != null)
             {
-                string selectedFavorite = favoritesListBox.SelectedItem.ToString();
-                int tourId = int.Parse(selectedFavorite.Split(':')[0]);
+                var selectedFavorite = favoritesListBox.SelectedItem.ToString();
+                var tourId = int.Parse(selectedFavorite.Split(':')[0]);
 
                 database.OpenConnection();
-                string query = "DELETE FROM Favorites WHERE UserId = @userId AND TourId = @tourId";
-                MySqlCommand cmd = new MySqlCommand(query, database.GetConnection());
+                var query = "DELETE FROM Favorites WHERE UserId = @userId AND TourId = @tourId";
+                var cmd = new MySqlCommand(query, database.GetConnection());
                 cmd.Parameters.AddWithValue("@userId", userId);
                 cmd.Parameters.AddWithValue("@tourId", tourId);
 

@@ -6,12 +6,12 @@ namespace WindowsFormsApp2
 {
     public partial class AdminForm : Form
     {
-        private Database database;
+        private readonly Database database;
 
         public AdminForm(Database db)
         {
             InitializeComponent();
-            this.database = db;
+            database = db;
             LoadTours();
         }
 
@@ -33,6 +33,7 @@ namespace WindowsFormsApp2
             database.CloseConnection();
         }
 
+
         private void addTourButton_Click(object sender, EventArgs e)
         {
             if (ValidateInput())
@@ -40,13 +41,19 @@ namespace WindowsFormsApp2
                 string title = titleTextBox.Text;
                 string description = descriptionTextBox.Text;
                 decimal price = decimal.Parse(priceTextBox.Text);
+                string weather = weatherTextBox.Text;
+                string transport = transportTextBox.Text;
+                string events = eventsTextBox.Text;
 
                 database.OpenConnection();
-                string query = "INSERT INTO Tours (Title, Description, Price) VALUES (@title, @description, @price)";
+                string query = "INSERT INTO Tours (Title, Description, Price, Weather, Transport, Events) VALUES (@title, @description, @price, @weather, @transport, @events)";
                 MySqlCommand cmd = new MySqlCommand(query, database.GetConnection());
                 cmd.Parameters.AddWithValue("@title", title);
                 cmd.Parameters.AddWithValue("@description", description);
                 cmd.Parameters.AddWithValue("@price", price);
+                cmd.Parameters.AddWithValue("@weather", weather);
+                cmd.Parameters.AddWithValue("@transport", transport);
+                cmd.Parameters.AddWithValue("@events", events);
 
                 cmd.ExecuteNonQuery();
                 database.CloseConnection();
@@ -55,6 +62,7 @@ namespace WindowsFormsApp2
                 LoadTours();
             }
         }
+
 
         private void updateTourButton_Click(object sender, EventArgs e)
         {
@@ -65,13 +73,19 @@ namespace WindowsFormsApp2
                 string title = titleTextBox.Text;
                 string description = descriptionTextBox.Text;
                 decimal price = decimal.Parse(priceTextBox.Text);
+                string weather = weatherTextBox.Text;
+                string transport = transportTextBox.Text;
+                string events = eventsTextBox.Text;
 
                 database.OpenConnection();
-                string query = "UPDATE Tours SET Title=@title, Description=@description, Price=@price WHERE TourId=@tourId";
+                string query = "UPDATE Tours SET Title=@title, Description=@description, Price=@price, Weather=@weather, Transport=@transport, Events=@events WHERE TourId=@tourId";
                 MySqlCommand cmd = new MySqlCommand(query, database.GetConnection());
                 cmd.Parameters.AddWithValue("@title", title);
                 cmd.Parameters.AddWithValue("@description", description);
                 cmd.Parameters.AddWithValue("@price", price);
+                cmd.Parameters.AddWithValue("@weather", weather);
+                cmd.Parameters.AddWithValue("@transport", transport);
+                cmd.Parameters.AddWithValue("@events", events);
                 cmd.Parameters.AddWithValue("@tourId", tourId);
 
                 cmd.ExecuteNonQuery();
@@ -82,16 +96,17 @@ namespace WindowsFormsApp2
             }
         }
 
+
         private void deleteTourButton_Click(object sender, EventArgs e)
         {
             if (toursListBox.SelectedItem != null)
             {
-                string selectedTour = toursListBox.SelectedItem.ToString();
-                int tourId = int.Parse(selectedTour.Split(':')[0]);
+                var selectedTour = toursListBox.SelectedItem.ToString();
+                var tourId = int.Parse(selectedTour.Split(':')[0]);
 
                 database.OpenConnection();
-                string query = "DELETE FROM Tours WHERE TourId = @tourId";
-                MySqlCommand cmd = new MySqlCommand(query, database.GetConnection());
+                var query = "DELETE FROM Tours WHERE TourId = @tourId";
+                var cmd = new MySqlCommand(query, database.GetConnection());
                 cmd.Parameters.AddWithValue("@tourId", tourId);
 
                 try
@@ -102,14 +117,10 @@ namespace WindowsFormsApp2
                 }
                 catch (MySqlException ex)
                 {
-                    if (ex.Number == 1451) 
-                    {
+                    if (ex.Number == 1451)
                         MessageBox.Show("Невозможно удалить тур, так как он добавлен в избранное у пользователей.");
-                    }
                     else
-                    {
                         MessageBox.Show($"Ошибка при удалении тура: {ex.Message}");
-                    }
                 }
                 finally
                 {
@@ -136,6 +147,9 @@ namespace WindowsFormsApp2
                     titleTextBox.Text = reader.GetString("Title");
                     descriptionTextBox.Text = reader.GetString("Description");
                     priceTextBox.Text = reader.GetDecimal("Price").ToString();
+                    weatherTextBox.Text = reader.GetString("Weather");
+                    transportTextBox.Text = reader.GetString("Transport");
+                    eventsTextBox.Text = reader.GetString("Events");
                 }
 
                 reader.Close();
@@ -143,9 +157,11 @@ namespace WindowsFormsApp2
             }
         }
 
+
+
         private bool ValidateInput()
         {
-            if (string.IsNullOrEmpty(titleTextBox.Text) || string.IsNullOrEmpty(descriptionTextBox.Text) || string.IsNullOrEmpty(priceTextBox.Text))
+            if (string.IsNullOrEmpty(titleTextBox.Text) || string.IsNullOrEmpty(descriptionTextBox.Text) || string.IsNullOrEmpty(priceTextBox.Text) || string.IsNullOrEmpty(weatherTextBox.Text) || string.IsNullOrEmpty(transportTextBox.Text) || string.IsNullOrEmpty(eventsTextBox.Text))
             {
                 MessageBox.Show("Пожалуйста, заполните все поля.");
                 return false;
@@ -159,5 +175,6 @@ namespace WindowsFormsApp2
 
             return true;
         }
+
     }
 }

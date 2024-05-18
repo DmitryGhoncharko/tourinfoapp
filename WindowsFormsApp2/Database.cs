@@ -1,10 +1,11 @@
-﻿using MySql.Data.MySqlClient;
+﻿using System.Data;
+using MySql.Data.MySqlClient;
 
 namespace WindowsFormsApp2
 {
     public class Database
     {
-        private MySqlConnection connection;
+        private readonly MySqlConnection connection;
 
         public Database(string connectionString)
         {
@@ -13,18 +14,12 @@ namespace WindowsFormsApp2
 
         public void OpenConnection()
         {
-            if (connection.State == System.Data.ConnectionState.Closed)
-            {
-                connection.Open();
-            }
+            if (connection.State == ConnectionState.Closed) connection.Open();
         }
 
         public void CloseConnection()
         {
-            if (connection.State == System.Data.ConnectionState.Open)
-            {
-                connection.Close();
-            }
+            if (connection.State == ConnectionState.Open) connection.Close();
         }
 
         public MySqlConnection GetConnection()
