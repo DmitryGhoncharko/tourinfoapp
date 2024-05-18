@@ -29,7 +29,7 @@
             this.favoritesLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
 
-            
+             
             this.toursLabel.AutoSize = true;
             this.toursLabel.Location = new System.Drawing.Point(12, 12);
             this.toursLabel.Name = "toursLabel";
@@ -37,12 +37,13 @@
             this.toursLabel.TabIndex = 4;
             this.toursLabel.Text = "Туры";
 
-           
+            
             this.toursListBox.FormattingEnabled = true;
             this.toursListBox.Location = new System.Drawing.Point(12, 28);
             this.toursListBox.Name = "toursListBox";
             this.toursListBox.Size = new System.Drawing.Size(560, 186);
             this.toursListBox.TabIndex = 0;
+            this.toursListBox.SelectedIndexChanged += new System.EventHandler(this.toursListBox_SelectedIndexChanged);
 
            
             this.addFavoriteButton.Location = new System.Drawing.Point(472, 220);
@@ -61,14 +62,14 @@
             this.favoritesLabel.TabIndex = 5;
             this.favoritesLabel.Text = "Избранное";
 
-            
+             
             this.favoritesListBox.FormattingEnabled = true;
             this.favoritesListBox.Location = new System.Drawing.Point(12, 279);
             this.favoritesListBox.Name = "favoritesListBox";
             this.favoritesListBox.Size = new System.Drawing.Size(560, 186);
             this.favoritesListBox.TabIndex = 1;
+            this.favoritesListBox.SelectedIndexChanged += new System.EventHandler(this.favoritesListBox_SelectedIndexChanged);
 
-          
             this.removeFavoriteButton.Location = new System.Drawing.Point(12, 220);
             this.removeFavoriteButton.Name = "removeFavoriteButton";
             this.removeFavoriteButton.Size = new System.Drawing.Size(150, 30);
@@ -77,7 +78,7 @@
             this.removeFavoriteButton.UseVisualStyleBackColor = true;
             this.removeFavoriteButton.Click += new System.EventHandler(this.removeFavoriteButton_Click);
 
-           
+             
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 481);
