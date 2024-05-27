@@ -156,5 +156,58 @@ namespace WindowsFormsApp2
                 LoadFavorites();
             }
         }
+
+        private void searchButton_Click(object sender, EventArgs e)
+        {
+            var city = searchTextBox.Text.Trim();
+            if (!string.IsNullOrEmpty(city))
+            {
+                toursListBox.Items.Clear();
+                database.OpenConnection();
+                var query = "SELECT * FROM Tours WHERE City LIKE @city";
+                var cmd = new MySqlCommand(query, database.GetConnection());
+                cmd.Parameters.AddWithValue("@city", "%" + city + "%");
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    var tourInfo =
+                        $"{reader.GetInt32("TourId")}: {reader.GetString("Title")} - {reader.GetDecimal("Price")} рублей";
+                    toursListBox.Items.Add(tourInfo);
+                }
+
+                reader.Close();
+                database.CloseConnection();
+            }
+        }
+
+        private void searchPriceButton_Click(object sender, EventArgs e)
+        {
+            if (decimal.TryParse(priceMinTextBox.Text, out decimal minPrice) &&
+                decimal.TryParse(priceMaxTextBox.Text, out decimal maxPrice))
+            {
+                toursListBox.Items.Clear();
+                database.OpenConnection();
+                var query = "SELECT * FROM Tours WHERE Price BETWEEN @minPrice AND @maxPrice";
+                var cmd = new MySqlCommand(query, database.GetConnection());
+                cmd.Parameters.AddWithValue("@minPrice", minPrice);
+                cmd.Parameters.AddWithValue("@maxPrice", maxPrice);
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    var tourInfo =
+                        $"{reader.GetInt32("TourId")}: {reader.GetString("Title")} - {reader.GetDecimal("Price")} рублей";
+                    toursListBox.Items.Add(tourInfo);
+                }
+
+                reader.Close();
+                database.CloseConnection();
+            }
+            else
+            {
+                MessageBox.Show("Введите корректные значения для минимальной и максимальной цены.");
+            }
+        }
     }
 }
